@@ -5,7 +5,7 @@ import {
   spring,
   useVideoConfig,
 } from "remotion";
-import { ACCENT } from "../WireheadingDemo";
+import { ACCENT } from "../constants";
 
 type Tier = "DELETE" | "RECONSIDER" | "KEEP";
 

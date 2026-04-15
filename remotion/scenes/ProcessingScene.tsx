@@ -1,5 +1,5 @@
 import { AbsoluteFill, useCurrentFrame, interpolate } from "remotion";
-import { ACCENT } from "../WireheadingDemo";
+import { ACCENT } from "../constants";
 
 const STEPS = [
   { label: "Extracting frames", detail: "1 fps · pHash dedupe", duration: 60 },

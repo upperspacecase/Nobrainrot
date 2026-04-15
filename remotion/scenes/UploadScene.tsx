@@ -5,7 +5,7 @@ import {
   spring,
   useVideoConfig,
 } from "remotion";
-import { ACCENT } from "../WireheadingDemo";
+import { ACCENT } from "../constants";
 
 export const UploadScene: React.FC = () => {
   const frame = useCurrentFrame();

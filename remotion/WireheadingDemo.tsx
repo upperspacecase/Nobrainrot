@@ -4,6 +4,7 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { ACCENT } from "./constants";
 import { PhoneScrollScene } from "./scenes/PhoneScrollScene";
 import { UploadScene } from "./scenes/UploadScene";
 import { ProcessingScene } from "./scenes/ProcessingScene";
@@ -16,8 +17,6 @@ export const SCENE_PROCESSING = 240; // 9–17s
 export const SCENE_RESULTS = 270; // 17–26s
 export const DEMO_DURATION =
   SCENE_PHONE + SCENE_UPLOAD + SCENE_PROCESSING + SCENE_RESULTS;
-
-const ACCENT = "#7CFFB2";
 
 export const WireheadingDemo: React.FC = () => {
   const frame = useCurrentFrame();
@@ -136,4 +135,3 @@ const SceneLabel: React.FC = () => {
   );
 };
 
-export { ACCENT };
