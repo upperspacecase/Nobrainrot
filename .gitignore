@@ -1,0 +1,24 @@
+# deps
+node_modules
+.pnp
+.pnp.js
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# next
+.next
+out
+
+# remotion
+out/
+
+# env
+.env*.local
+.env
+
+# misc
+.DS_Store
+*.log
+.vercel
+.turbo
