@@ -6,7 +6,7 @@ A Life-Time micro-tool. Anonymous, no signup, no data retention. **Tools to get 
 
 ---
 
-## Status (v0.2)
+## Status (v0.3 — functional)
 
 | Piece | State |
 |---|---|
@@ -17,10 +17,11 @@ A Life-Time micro-tool. Anonymous, no signup, no data retention. **Tools to get 
 | Scoring engine (14 rules, transparent rubric) | ✅ |
 | OCR — Claude Vision provider (primary) | ✅ |
 | OCR — PaddleOCR provider (optional, offline) | ✅ scaffolded, install `ppu-paddle-ocr` to enable |
-| `/api/audit` — HTTP endpoint | ✅ accepts multipart image or JSON `{names}` |
-| `audit` CLI | ✅ `npm run audit -- image.png` or `npm run audit -- --names "..."` |
-| Video → frames pipeline (ffmpeg) | ⏳ next |
-| Results UI wired to API | ⏳ next |
+| Video → frames pipeline (ffmpeg + pHash dedup) | ✅ |
+| `/api/audit` — HTTP endpoint | ✅ accepts video, image, or JSON `{names}` |
+| `audit` CLI | ✅ `npm run audit -- image.png` or `--names "..."` |
+| Landing page upload/paste UI wired to API | ✅ |
+| Share link (URL-fragment, base64-gzip, no server) | ✅ |
 
 ## Architecture
 
@@ -31,12 +32,18 @@ app/
 data/
   apps.seed.json              Hand-curated 100-app fallback (committed)
   apps.json                   Full 1000-app list (generated via `npm run build:apps`)
+components/
+  AuditForm.tsx               Upload/paste form, calls /api/audit, renders results
+  AuditResults.tsx            Tiered list, expandable rules, share & reset buttons
+  DemoPlayer.tsx              Remotion player wrapper
 lib/
   apps-dictionary.ts          Loads apps.json (falls back to seed)
   fuzzy-match.ts              Levenshtein + normalize + alias resolution
   itunes.ts                   iTunes Search / Lookup client (20 req/min limiter)
   rules.ts                    14 scoring rules — edit here to tune the rubric
   score.ts                    Apply rules → tier (DELETE / RECONSIDER / KEEP)
+  share.ts                    base64-gzip codec for URL-fragment share links
+  video.ts                    ffmpeg frame extraction + 64-bit pHash dedup
   ocr/
     index.ts                  Orchestrator: provider → fuzzy → enrich → score
     claude-vision.ts          Claude Haiku 4.5 provider (uses icon context)
@@ -148,10 +155,21 @@ No accounts. No tracking. Images are processed in memory — the `/api/audit`
 route never writes to disk. No DB. Share links are URL-fragment-encoded
 client-side. The repo is the source of truth.
 
+## Video pipeline
+
+`lib/video.ts` handles: ffmpeg → 1 fps PNG frames → 64-bit pHash dedup (Hamming ≤ 6 → duplicate) → hard cap at 40 unique frames.
+
+A 60s iOS home-screen scroll typically yields 8–15 unique frames after dedup, which is what actually hits the OCR provider — keeping cost and latency down by roughly 4×.
+
+The ffmpeg binary ships via `ffmpeg-static` (~40 MB). On Vercel serverless, this fits Pro's 250 MB function size, but Vercel's 4.5 MB request-body cap means full-size video uploads require one of:
+
+1. Deploy the `/api/audit` route to a long-lived worker (Fly / Modal / Railway) and point the frontend at it.
+2. Presign uploads to Vercel Blob / S3 from the browser, then pass the blob URL to `/api/audit` (minor route change).
+
+For local `npm run dev`, the route handles 200 MB videos directly.
+
 ## What's next
 
-- Video → frames pipeline (ffmpeg + pHash dedup) — the only piece between
-  here and the spec's "drop a screen recording" UX.
-- Wire the landing page "Audit my phone" button to the existing
-  `/api/audit` endpoint (file input + result render).
-- Share-link encoding (base64-gzipped JSON in URL hash).
+- Vercel Blob / presigned upload flow so video works in prod serverless.
+- Full 1000-app dictionary checked in (run `npm run build:apps` against real iTunes RSS).
+- v2 "deeper analysis" tier via Claude Sonnet 4.6 (opt-in, per spec §9).

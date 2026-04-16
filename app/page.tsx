@@ -1,4 +1,5 @@
 import DemoPlayer from "@/components/DemoPlayer";
+import AuditForm from "@/components/AuditForm";
 
 export default function Page() {
   return (
@@ -22,19 +23,16 @@ export default function Page() {
             why.
           </p>
 
-          <div className="mt-10 flex items-center gap-4">
-            <button
-              disabled
-              className="rounded-md bg-accent px-5 py-3 text-sm font-semibold text-black hover:bg-accent/90 disabled:opacity-60 disabled:cursor-not-allowed"
-              title="Demo only — pipeline shipping soon"
-            >
-              Audit my phone &rarr;
-            </button>
-            <span className="text-xs text-neutral-500">
-              pipeline shipping soon — watch the demo below
-            </span>
-          </div>
         </header>
+
+        {/* audit form */}
+        <section className="mb-16">
+          <div className="mb-3 flex items-center justify-between text-xs uppercase tracking-[0.2em] text-neutral-500">
+            <span>— audit</span>
+            <span>in-memory · discarded after</span>
+          </div>
+          <AuditForm />
+        </section>
 
         {/* remotion demo */}
         <section className="mb-16">
